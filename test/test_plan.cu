@@ -25,7 +25,7 @@ int main(int argc, char const *argv[]) {
     //filename for test data (dumped with binary_io.h)
     const string  filename = argv[1];
     //length of test data
-    const index_t len_data = atoi(argv[2]);
+    const index_t len_data = atoll(argv[2]);
     //load factor of the hash table
     const float   load     = atof(argv[3]);
     //capacity of the hash table

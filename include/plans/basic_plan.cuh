@@ -88,6 +88,7 @@ public:
 
             auto any_thread_state_changed = [&]
             {
+                group.sync();
                 return !group.all(thread_state == state_t::neutral);
             };
 
@@ -98,6 +99,7 @@ public:
 
             auto any_candidates = [&]
             {
+                group.sync();
                 return group.any(table_elem.get_key() == data_elem.get_key()
                               || table_elem.get_key() == empty_key
                               || table_elem.get_key() == tomb_key);
@@ -138,11 +140,14 @@ public:
                         while (any_candidates())
                         {
 
+                            group.sync();
+                            unsigned same_mask = group.ballot(table_elem.get_key() == data_elem.get_key());
                             //update+retrieve
                             if (table_elem.get_key() == data_elem.get_key())
                             {
 
-                                if(group.thread_rank() == leader_rank())
+                                //if(group.thread_rank() == leader_rank())
+                                if(group.thread_rank() == __ffs(same_mask)-1)
                                 {
 
                                     //update
@@ -166,13 +171,17 @@ public:
                                 break;
                             }
 
+                            group.sync();
+                            unsigned empty_mask = group.ballot(table_elem.get_key() == empty_key
+                             || table_elem.get_key() == tomb_key);
                             //insert
                             if (table_elem.get_key() == empty_key
                              || table_elem.get_key() == tomb_key)
                             {
                                 if (table_op == table_op_t::insert)
                                 {
-                                    if(group.thread_rank() == leader_rank())
+                                    //if(group.thread_rank() == leader_rank())
+                                    if(group.thread_rank() == __ffs(empty_mask)-1)
                                     {
 
                                         //insert

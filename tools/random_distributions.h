@@ -1,6 +1,7 @@
 #ifndef RANDOM_DISTRIBUTION_H
 #define RANDOM_DISTRIBUTION_H
 
+#include <random>
 #include <iostream>
 #include <vector>
 #include <algorithm>
